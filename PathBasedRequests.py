@@ -618,6 +618,7 @@ for instanceName, directory in DIRECTORIES.iteritems():
     SOLUTIONS[instanceName].printToScreen()
     SOLUTIONS[instanceName].savePlaneVars(airplaneMIP.y,model.solution.values(),
              { n : j for j, n in enumerate(model.variables.get_names()) })
+
 """
 solutionValues=model.solution.get_values()
 idx2name = { j : n for j, n in enumerate(model.variables.get_names()) }
