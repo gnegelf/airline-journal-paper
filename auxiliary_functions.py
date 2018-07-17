@@ -35,7 +35,7 @@ def readData(directory):
     # reading airports.dat
     # --------------------
     
-    print "reading '"+directory+"/airports.dat'"
+    #print "reading '"+directory+"/airports.dat'"
     
     file = open(directory+"/airports.dat", "r")
     airports_data = file.read()
@@ -57,7 +57,7 @@ def readData(directory):
     # reading distances.dat
     # ---------------------
     
-    print "reading '"+directory+"/distances.dat'"
+    #print "reading '"+directory+"/distances.dat'"
     
     file = open(directory+"/distances.dat", "r")
     distances_data = file.read()
@@ -79,7 +79,7 @@ def readData(directory):
     # reading fuels.dat
     # -----------------
     
-    print "reading '"+directory+"/fuels.dat'"
+    #print "reading '"+directory+"/fuels.dat'"
     
     file = open(directory+"/fuels.dat", "r")
     fuels_data = file.read()
@@ -99,7 +99,7 @@ def readData(directory):
     # reading requests.dat
     # --------------------
     
-    print "reading '"+directory+"/requests.dat'"
+    #print "reading '"+directory+"/requests.dat'"
     
     file = open(directory+"/requests.dat", "r")
     requests_data = file.read()
@@ -122,7 +122,7 @@ def readData(directory):
     # reading timedelta.dat
     # ------------------------
     
-    print "reading '"+directory+"/timedelta.dat'"
+    #print "reading '"+directory+"/timedelta.dat'"
     
     file = open(directory+"/timedelta.dat", "r")
     timedelta_data = file.read()
@@ -144,7 +144,7 @@ def readData(directory):
     # reading weightlimits.dat
     # ------------------------
     
-    print "reading '"+directory+"/weightlimits.dat'"
+    #print "reading '"+directory+"/weightlimits.dat'"
     
     file = open(directory+"/weightlimits.dat", "r")
     weightlimits_data = file.read()
@@ -166,7 +166,7 @@ def readData(directory):
     # reading columnsolution.dat
     # --------------------------
     
-    print "reading '"+directory+"/columnsolution.dat'"
+    #print "reading '"+directory+"/columnsolution.dat'"
     
     file = open(directory+"/columnsolution.dat", "r")
     solution_data = file.read()
@@ -188,7 +188,7 @@ def readData(directory):
     # reading columnsolution.dat
     # --------------------------
     
-    print "reading '"+directory+"/requestsolution.dat'"
+    #print "reading '"+directory+"/requestsolution.dat'"
     
     file = open(directory+"/requestsolution.dat", "r")
     solution_data = file.read()

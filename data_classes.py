@@ -132,11 +132,11 @@ class __SOLUTION__(object):
         self.time = int(min([10800,round(time,0)]))
         self.history = {}
     def toString(self):
-        s = self.instanceName
-        s += str(self.time) +" & "
-        s += str(self.dualBound) +" & "
-        s += str(self.bestValue) +" & "
-        s += str(self.gap) + "\% & "
+        s = self.instanceName + " "
+        s += str(self.time) +" , "
+        s += str(self.dualBound) +" , "
+        s += str(self.bestValue) + " , "
+        s += str(self.gap) + "\% , "
         s += str(self.loop_iterations)
         return s
     def printToScreen(self):
@@ -153,6 +153,12 @@ class __SOLUTION__(object):
             valStore=solutionValues[name2idx[val]]
             if valStore > 0.5 or valStore < -0.5:
                 self.planeVars[val] = valStore
+    def saveToFile(self,fileName,options=[]):
+        file = open(fileName, "a")
+        lineToAdd = self.instanceName + " , %d , %d , %.2f \\%% , %d , %.1f\n" % (self.dualBound,self.bestValue,self.gap,self.time,self.loop_iterations)
+        file.write(lineToAdd)
+        file.close()
+        
 
 class __DATA__(object):
     
@@ -453,8 +459,9 @@ class __DATA__(object):
 
 class __AIRLINEMIP__(object):
     
-    def __init__(self,DATA,cuttingPlanes={},full=0,p={},pathBased=1):
+    def __init__(self,DATA,cuttingPlanes={},full=0,p={},pathBased=1,log_file_name=""):
         self.DATA = DATA
+        self.log_file_name = log_file_name
         if pathBased:
             self.generateMIP(cuttingPlanes,full,p)
         else:
@@ -480,6 +487,7 @@ class __AIRLINEMIP__(object):
             AirportNum = DATA.max_airport_num
         else:
             AirportNum = DATA.current_airport_num
+            #AirportNum = DATA.max_airport_num
         turnover_travel_timesteps = DATA.turnover_travel_timesteps
         travelcost = DATA.travelcost
         plane_min_timestep = DATA.plane_min_timestep
@@ -524,6 +532,10 @@ class __AIRLINEMIP__(object):
         if full:
             model.set_results_stream('reconst.rlog')
             model.set_warning_stream('reconst.wlog')
+        else:
+            if self.log_file_name != "":
+                model.set_results_stream(self.log_file_name)
+            
         self.model = model
         
         
@@ -963,7 +975,7 @@ class __AIRLINEMIP__(object):
                             thecoefs.append(1.0)
                             number_of_nonzeros += 1
                             
-                    if j == PLANE[p].plane_departure:
+                    if j == PLANE[p].plane_departure and n2==1:
                         thevars.append(f_dep[p,n2])
                         thecoefs.append(1.0)
                         number_of_nonzeros += 1
@@ -1517,7 +1529,12 @@ class __AIRLINEMIP__(object):
         
         model = cplex.Cplex()
         self.model = model
-        
+        if full:
+            model.set_results_stream('reconst.rlog')
+            model.set_warning_stream('reconst.wlog')
+        else:
+            if self.log_file_name != "":
+                model.set_results_stream(self.log_file_name)
         
         number_of_variables = 0
         number_of_constraints = 0

@@ -1,6 +1,6 @@
 #import re
 import time
-#import sys
+import sys
 
 #from operator import itemgetter
 if not 'cplex' in globals():
@@ -269,7 +269,6 @@ class CountNodesCallback(MIPInfoCallback):
 
 class breakIncumbentCallback2(IncumbentCallback):
   def __call__(self):
-    print("33")
     all_values = self.get_values()
     self.totallySolved = 1
     paths = {}
@@ -489,51 +488,69 @@ class breakIncumbentCallback(IncumbentCallback):
 
 # prepare reading and parsing
 DIRECTORIES = {
-    #'BUF-AIV': 'Testinstances/A2-BUF_A2-AIV',
-    #'BUF-ANT': 'Testinstances/A2-BUF_A2-ANT',
-    #'BUF-BEE': 'Testinstances/A2-BUF_A2-BEE',
-    #'BUF-BOK': 'Testinstances/A2-BUF_A2-BOK',
-    #'BUF-EGL': 'Testinstances/A2-BUF_A2-EGL',
-    #'BUF-GNU': 'Testinstances/A2-BUF_A2-GNU',
-    #'BUF-JKL': 'Testinstances/A2-BUF_A2-JKL',
-    #'BUF-LEO': 'Testinstances/A2-BUF_A2-LEO',
-    #'BUF-NAS': 'Testinstances/A2-BUF_A2-NAS',
-    #'BUF-OWL': 'Testinstances/A2-BUF_A2-OWL',
-    #'BUF-ZEB': 'Testinstances/A2-BUF_A2-ZEB',
-    #'EGL-BEE': 'Testinstances/A2-EGL_A2-BEE',
-    #'EGL-GNU': 'Testinstances/A2-EGL_A2-GNU',
-    #'EGL-LEO': 'Testinstances/A2-EGL_A2-LEO',
+    'BUF-AIV': 'Testinstances/A2-BUF_A2-AIV',
+    'BUF-ANT': 'Testinstances/A2-BUF_A2-ANT',
+    'BUF-BEE': 'Testinstances/A2-BUF_A2-BEE',
+    'BUF-BOK': 'Testinstances/A2-BUF_A2-BOK',
+    'BUF-EGL': 'Testinstances/A2-BUF_A2-EGL',
+    'BUF-GNU': 'Testinstances/A2-BUF_A2-GNU',
+    'BUF-JKL': 'Testinstances/A2-BUF_A2-JKL',
+    'BUF-LEO': 'Testinstances/A2-BUF_A2-LEO',
+    'BUF-NAS': 'Testinstances/A2-BUF_A2-NAS',
+    'BUF-OWL': 'Testinstances/A2-BUF_A2-OWL',
+    'BUF-ZEB': 'Testinstances/A2-BUF_A2-ZEB',
+    'EGL-BEE': 'Testinstances/A2-EGL_A2-BEE',
+    'EGL-GNU': 'Testinstances/A2-EGL_A2-GNU',
+    'EGL-LEO': 'Testinstances/A2-EGL_A2-LEO',
     'GNU-BEE': 'Testinstances/A2-GNU_A2-BEE',
-    #'GNU-JKL': 'Testinstances/A2-GNU_A2-JKL',
-    #'GNU-LEO': 'Testinstances/A2-GNU_A2-LEO',
-    #'LEO-AIV': 'Testinstances/A2-LEO_A2-AIV',
-    #'LEO-ANT': 'Testinstances/A2-LEO_A2-ANT',
-    #'LEO-BEE': 'Testinstances/A2-LEO_A2-BEE',
-    #'LEO-BOK': 'Testinstances/A2-LEO_A2-BOK',
-    #'LEO-JKL': 'Testinstances/A2-LEO_A2-JKL',
-    #'LEO-NAS': 'Testinstances/A2-LEO_A2-NAS',
-    #'LEO-OWL': 'Testinstances/A2-LEO_A2-OWL',
+    'GNU-JKL': 'Testinstances/A2-GNU_A2-JKL',
+    'GNU-LEO': 'Testinstances/A2-GNU_A2-LEO',
+    'LEO-AIV': 'Testinstances/A2-LEO_A2-AIV',
+    'LEO-ANT': 'Testinstances/A2-LEO_A2-ANT',
+    'LEO-BEE': 'Testinstances/A2-LEO_A2-BEE',
+    'LEO-BOK': 'Testinstances/A2-LEO_A2-BOK',
+    'LEO-JKL': 'Testinstances/A2-LEO_A2-JKL',
+    'LEO-NAS': 'Testinstances/A2-LEO_A2-NAS',
+    'LEO-OWL': 'Testinstances/A2-LEO_A2-OWL',
+    }
+DIRECTORIES = {
+    'LEO-JKL': 'Testinstances/A2-LEO_A2-JKL',
+    'LEO-NAS': 'Testinstances/A2-LEO_A2-NAS',
+    'LEO-OWL': 'Testinstances/A2-LEO_A2-OWL',
     }
 
 cuttingPlanes = {
         'min_fuel_cut':1,
-        'useless_detour_cut':1,
+        #'useless_detour_cut':1,
         'max_visit_cut':1,
-        'time_order_cut':1,
+        #'time_order_cut':1,
         'fuelstop_cut':1,
         #'arrival_departure_cut':1,
-        'request_conflict_cut':1,
+        #'request_conflict_cut':1,
         #'time_conflict_cut':1,
         }
+pathBaasedBoolean = int(sys.argv[1])
+
+if int(sys.argv[2])==2:
+    cuttingPlanes['useless_detour_cut']=1
+if int(sys.argv[2])==3:
+    cuttingPlanes['time_order_cut']=1
+if int(sys.argv[2])==4:
+    cuttingPlanes['request_conflict_cut']=1
+if int(sys.argv[2])==5:
+    cuttingPlanes['useless_detour_cut']=1
+    cuttingPlanes['time_order_cut']=1
+    cuttingPlanes['request_conflict_cut']=1
 
 pathBasedBoolean = 1
 differentFull = 1
 lazyCb = 0
 
 SOLUTIONS = {}
-
+maxLoopIterations = 0
 for instanceName, directory in DIRECTORIES.iteritems():
     DATA = readData(directory)
+    #continue
     if not ("fullAirplaneMIP" in globals() ) or 1:
         fullAirplaneMIP = {}
         fullModelCuts = {}
@@ -542,11 +559,11 @@ for instanceName, directory in DIRECTORIES.iteritems():
         for p in DATA.PLANE:
             if pathBasedBoolean:
                 if differentFull:
-                    fullAirplaneMIP[p] = __AIRLINEMIP__(DATA,fullModelCuts,1,{p:DATA.PLANE[p]},0)
+                    fullAirplaneMIP[p] = __AIRLINEMIP__(DATA,fullModelCuts,1,{p:DATA.PLANE[p]},0,log_file_name ="")
                 else:
-                    fullAirplaneMIP[p] = __AIRLINEMIP__(DATA,fullModelCuts,1,{p:DATA.PLANE[p]},1)
+                    fullAirplaneMIP[p] = __AIRLINEMIP__(DATA,fullModelCuts,1,{p:DATA.PLANE[p]},1,log_file_name ="")
             else:
-                fullAirplaneMIP[p] = __AIRLINEMIP__(DATA,fullModelCuts,1,{p:DATA.PLANE[p]},0)
+                fullAirplaneMIP[p] = __AIRLINEMIP__(DATA,fullModelCuts,1,{p:DATA.PLANE[p]},0,log_file_name = "")
     primal_objective=100000
     totallySolved = 0
     timeLimit = 10800
@@ -559,9 +576,11 @@ for instanceName, directory in DIRECTORIES.iteritems():
         #    lazyCb=1
         SOLUTIONS[instanceName].loop_iterations += 1
         if pathBasedBoolean:
-            airplaneMIP = __AIRLINEMIP__(DATA,cuttingPlanes)
+            airplaneMIP = __AIRLINEMIP__(DATA,cuttingPlanes,
+                                         log_file_name = "logs/PB%d/" % int(sys.argv[2]) + instanceName + "%d" % SOLUTIONS[instanceName].loop_iterations)
         else:
-            airplaneMIP = __AIRLINEMIP__(DATA,cuttingPlanes,pathBased=0)
+            airplaneMIP = __AIRLINEMIP__(DATA,cuttingPlanes,pathBased=0,
+                                         log_file_name = "logs/notPB%d/" % int(sys.argv[2]) + instanceName + "%d" % SOLUTIONS[instanceName].loop_iterations)
         primal_objective = setPrimal(airplaneMIP)
         
         if pathBasedBoolean:
@@ -609,15 +628,64 @@ for instanceName, directory in DIRECTORIES.iteritems():
             bestValue = cb.bestSolution
             dualBound = round(solution.get_objective_value(),0)
             loops = SOLUTIONS[instanceName].loop_iterations
-            gap = round(1 - dualBound/bestValue,2)
-            SOLUTIONS[instanceName].history[loops] = __SOLUTION__(gap,loops,bestValue,dualBound,time.time()-t0,instanceName)
-        
+            gap = round(100 - 100*dualBound/bestValue,2)
+            SOLUTIONS[instanceName].history[loops] = __SOLUTION__(gap,dualBound,bestValue,loops,time.time()-t0,instanceName)
+            if loops > maxLoopIterations:
+                maxLoopIterations = loops
     
-    SOLUTIONS[instanceName].gap = round(1- SOLUTIONS[instanceName].dualBound/SOLUTIONS[instanceName].bestValue,2)
+    SOLUTIONS[instanceName].gap = round(100- 100*SOLUTIONS[instanceName].dualBound/SOLUTIONS[instanceName].bestValue,2)
     SOLUTIONS[instanceName].time = round(time.time()-t0,0)
     SOLUTIONS[instanceName].printToScreen()
-    SOLUTIONS[instanceName].savePlaneVars(airplaneMIP.y,model.solution.values(),
+    SOLUTIONS[instanceName].savePlaneVars(airplaneMIP.y,model.solution.get_values(),
              { n : j for j, n in enumerate(model.variables.get_names()) })
+
+SOLUTIONS["Average"]=__SOLUTION__(sum([sol.gap for sol in SOLUTIONS.itervalues()])/float(len(SOLUTIONS)),
+
+                                  sum([sol.dualBound for sol in SOLUTIONS.itervalues()])/float(len(SOLUTIONS)),
+                                  sum([sol.bestValue for sol in SOLUTIONS.itervalues()])/float(len(SOLUTIONS)),
+                                  sum([sol.loop_iterations for sol in SOLUTIONS.itervalues()])/float(len(SOLUTIONS)),
+                                  sum([sol.time for sol in SOLUTIONS.itervalues()])/float(len(SOLUTIONS)),"Average")
+
+for i in range(1,1+maxLoopIterations):
+    bestValues = 0.0
+    dualBounds = 0.0
+    times = 0.0
+    for sol in SOLUTIONS.itervalues():
+        if sol.history.has_key(i):
+            bestValues +=  sol.history[i].bestValue
+            dualBounds += sol.history[i].dualBound
+            times += sol.history[i].time
+        else:
+            for adder in range(1,i):
+                if sol.history.has_key(i-adder):
+                    bestValues +=  sol.history[i-adder].bestValue
+                    dualBounds += sol.history[i-adder].dualBound
+                    times += sol.history[i-adder].time
+                    break
+        
+    SOLUTIONS["Average_iteration_%d" % i ]=__SOLUTION__(round(100 - 100*(dualBounds/float(len(SOLUTIONS)-i))/(bestValues/float(len(SOLUTIONS)-i)),2),
+
+                                  dualBounds/float(len(SOLUTIONS)-i),
+                                  bestValues/float(len(SOLUTIONS)-i),
+                                  i,
+                                  times/float(len(SOLUTIONS)-i),"Average_iteration_%d" % i)
+
+cuttingPlanesStr = ""
+for key in cuttingPlanes:
+    cuttingPlanesStr += " " + key
+commentLine = "# " + time.ctime(time.time()) + "\n"
+commentLine += "# pathBased %d, Cutting planes: " % pathBasedBoolean +cuttingPlanesStr +"\n \n"
+if pathBasedBoolean:
+    fileName = "resultsPB.txt"
+else:
+    fileName = "resultsOldModel.txt"
+
+file = open(fileName, "a")
+file.write(commentLine)
+file.close()
+for key, sol in sorted(SOLUTIONS.iteritems()):
+    sol.saveToFile(fileName)
+
 
 """
 solutionValues=model.solution.get_values()
