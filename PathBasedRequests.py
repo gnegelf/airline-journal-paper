@@ -620,7 +620,7 @@ for instanceName, directory in DIRECTORIES.iteritems():
             break
         else:
             SOLUTIONS[instanceName].dualBound = round(solution.get_objective_value(),0)
-            bestValue = cb.bestSolution
+            bestValue = round(cb.bestSolution,0)
             dualBound = round(solution.get_objective_value(),0)
             loops = SOLUTIONS[instanceName].loop_iterations
             gap = round(100 - 100*dualBound/bestValue,2)
@@ -629,7 +629,7 @@ for instanceName, directory in DIRECTORIES.iteritems():
                 maxLoopIterations = loops
     
     SOLUTIONS[instanceName].gap = round(100- 100*SOLUTIONS[instanceName].dualBound/SOLUTIONS[instanceName].bestValue,2)
-    SOLUTIONS[instanceName].time = round(time.time()-t0,0)
+    SOLUTIONS[instanceName].time = int(min([10800,round(time.time()-t0,0)]))
     SOLUTIONS[instanceName].printToScreen()
     SOLUTIONS[instanceName].savePlaneVars(airplaneMIP.y,model.solution.get_values(),
              { n : j for j, n in enumerate(model.variables.get_names()) })

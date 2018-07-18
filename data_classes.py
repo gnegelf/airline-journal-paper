@@ -155,7 +155,11 @@ class __SOLUTION__(object):
                 self.planeVars[val] = valStore
     def saveToFile(self,fileName,options=[]):
         file = open(fileName, "a")
-        lineToAdd = self.instanceName + " , %d , %d , %.2f \\%% , %d , %.1f\n" % (self.dualBound,self.bestValue,self.gap,self.time,self.loop_iterations)
+        if self.instanceName[0] != 'A':
+            lineToAdd = self.instanceName + " & & %d & %d & %.2f \\%% & %d & %.1f \\\\\n" % (self.dualBound,self.bestValue,self.gap,self.time,self.loop_iterations)
+        else:
+            lineToAdd = self.instanceName + " & & %d & %d & %.2f \\%% & %d & %d\\\\\n" % (self.dualBound,self.bestValue,self.gap,self.time,int(self.loop_iterations))
+        
         file.write(lineToAdd)
         file.close()
         
