@@ -514,11 +514,6 @@ DIRECTORIES = {
     'LEO-OWL': 'Testinstances/A2-LEO_A2-OWL',
     }
 
-DIRECTORIES = {
-    'LEO-JKL': 'Testinstances/A2-LEO_A2-JKL',
-    'LEO-NAS': 'Testinstances/A2-LEO_A2-NAS',
-    'LEO-OWL': 'Testinstances/A2-LEO_A2-OWL',
-    }
 cuttingPlanes = {
         'min_fuel_cut':1,
         #'useless_detour_cut':1,
