@@ -621,6 +621,7 @@ for instanceName, directory in DIRECTORIES.iteritems():
             #model.parameters.mip.strategy.file.set(2)
             #model.parameters.emphasis.mip.set(2)
             t0used = time.time()
+            model.parameters.threads.set(4)
             model.solve()
             time_used += -t0used+time.time()
             if cb.bestSolution < primal_objective - 0.01:
@@ -672,6 +673,7 @@ for instanceName, directory in DIRECTORIES.iteritems():
         #model.parameters.mip.strategy.file.set(2)
         #model.parameters.emphasis.mip.set(2)
         t0 = time.time()
+        model.parameters.threads.set(4)
         model.solve()
         solution = model.solution
         if model.solution.get_status() == 107:
