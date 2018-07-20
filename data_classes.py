@@ -155,7 +155,7 @@ class __SOLUTION__(object):
                 self.planeVars[val] = valStore
     def saveToFile(self,fileName,options=[]):
         file = open(fileName, "a")
-        if self.instanceName[0] != 'A':
+        if self.instanceName[0] == 'A':
             lineToAdd = self.instanceName + " & & %d & %d & %.2f \\%% & %d & %.1f \\\\\n" % (self.dualBound,self.bestValue,self.gap,self.time,self.loop_iterations)
         else:
             lineToAdd = self.instanceName + " & & %d & %d & %.2f \\%% & %d & %d\\\\\n" % (self.dualBound,self.bestValue,self.gap,self.time,int(self.loop_iterations))
@@ -166,7 +166,7 @@ class __SOLUTION__(object):
 
 class __DATA__(object):
     
-    def __init__(self,AIRPORT,PLANE,REQUEST,TRIP,WEIGHTLIMIT,PLANE_SOLUTION,REQUEST_SOLUTION,timedelta):
+    def __init__(self,AIRPORT,PLANE,REQUEST,TRIP,WEIGHTLIMIT,PLANE_SOLUTION,REQUEST_SOLUTION,timedelta,use_all=0):
         self.AIRPORT = AIRPORT
         self.PLANE = PLANE
         self.REQUEST = REQUEST
@@ -175,6 +175,7 @@ class __DATA__(object):
         self.PLANE_SOLUTION = PLANE_SOLUTION
         self.REQUEST_SOLUTION = REQUEST_SOLUTION
         self.timedelta = timedelta
+        self.use_all = use_all
         self.deriveData()
 
     def deriveData(self):
@@ -444,7 +445,11 @@ class __DATA__(object):
               if PLANE[p].destination == i:
                 maxStops[i] += 1 
           else:
-            maxStops[i] = 5
+            maxStops[i] = 2
+            for p,i2,j in TIMEFREEPLANESOLUTION:
+                if i2==i:
+                    maxStops[i] += 0.501
+            maxStops[i] = int(round(maxStops[i],1))
     
                 
         AirportNum2 = {}
@@ -458,8 +463,14 @@ class __DATA__(object):
         for i in AIRPORT:
             for p in PLANE:
                 AirportNum[p,i] = [1]
+        if not self.use_all:
+            self.current_airport_num = AirportNum
+        else:
+            self.current_airport_num = AirportNum2
 
-        self.current_airport_num = AirportNum
+
+
+
 
 class __AIRLINEMIP__(object):
     

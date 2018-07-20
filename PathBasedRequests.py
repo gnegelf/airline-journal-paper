@@ -25,6 +25,7 @@ EPSILON = 1e-6
 # callbacks
 # ---------
 
+
 class RemoveIncumbentCallback(LazyConstraintCallback):
   def __call__(self):
     all_values = self.get_values()
@@ -260,7 +261,6 @@ class CountNodesCallback(MIPInfoCallback):
 
     def __call__(self):
 
-        self.number_of_nodes = self.get_num_nodes()
         self.best_obj_val = self.get_best_objective_value()
         self.mip_gap = self.get_MIP_relative_gap()
 
@@ -514,6 +514,23 @@ DIRECTORIES = {
     'LEO-OWL': 'Testinstances/A2-LEO_A2-OWL',
     }
 
+use_all = sys.argv[3]
+"""
+if use_all:
+    DIRECTORIES = {
+        'BUF-AIV': 'Testinstances/A2-BUF_A2-AIV',
+        'LEO-AIV': 'Testinstances/A2-LEO_A2-AIV',
+        'LEO-ANT': 'Testinstances/A2-LEO_A2-ANT',
+        'LEO-JKL': 'Testinstances/A2-LEO_A2-JKL',
+        'LEO-NAS': 'Testinstances/A2-LEO_A2-NAS',
+        'LEO-OWL': 'Testinstances/A2-LEO_A2-OWL',
+        #'BUF-ZEB': 'Testinstances/A2-BUF_A2-ZEB',
+        'EGL-BEE': 'Testinstances/A2-EGL_A2-BEE',
+        #'EGL-GNU': 'Testinstances/A2-EGL_A2-GNU',
+        }
+
+"""
+
 cuttingPlanes = {
         'min_fuel_cut':1,
         #'useless_detour_cut':1,
@@ -544,7 +561,8 @@ lazyCb = 0
 SOLUTIONS = {}
 maxLoopIterations = 0
 for instanceName, directory in DIRECTORIES.iteritems():
-    DATA = readData(directory)
+    dualBound=0
+    DATA = readData(directory,use_all)
     #continue
     if not ("fullAirplaneMIP" in globals() ) or 1:
         fullAirplaneMIP = {}
@@ -566,10 +584,78 @@ for instanceName, directory in DIRECTORIES.iteritems():
     time_used = 0
     SOLUTIONS[instanceName] = __SOLUTION__(100,0,100000,0,10800,instanceName)
     #while not totallySolved and not lazyCb:
-    while not totallySolved:
-        #if SOLUTIONS[instanceName].loop_iterations > 0:
-        #    lazyCb=1
-        SOLUTIONS[instanceName].loop_iterations += 1
+    if not use_all:
+        while not totallySolved:
+            #if SOLUTIONS[instanceName].loop_iterations > 0:
+            #    lazyCb=1
+            SOLUTIONS[instanceName].loop_iterations += 1
+            if pathBasedBoolean:
+                airplaneMIP = __AIRLINEMIP__(DATA,cuttingPlanes,
+                                             log_file_name = "logs/PB%d/" % int(sys.argv[2]) + instanceName + "%d" % SOLUTIONS[instanceName].loop_iterations)
+            else:
+                airplaneMIP = __AIRLINEMIP__(DATA,cuttingPlanes,pathBased=0,
+                                             log_file_name = "logs/notPB%d/" % int(sys.argv[2]) + instanceName + "%d" % SOLUTIONS[instanceName].loop_iterations)
+            primal_objective = setPrimal(airplaneMIP)
+            
+            if pathBasedBoolean:
+                if differentFull:
+                    if lazyCb:
+                        cb = airplaneMIP.model.register_callback(RemoveIncumbentCallback)
+                    else:
+                        cb = airplaneMIP.model.register_callback(breakIncumbentCallback3)
+                else:
+                    cb = airplaneMIP.model.register_callback(breakIncumbentCallback)
+            else:
+                cb = airplaneMIP.model.register_callback(breakIncumbentCallback2)
+            cb.totallySolved = 0
+            cb.MIPMODEL = airplaneMIP
+            cb.fullModel = fullAirplaneMIP
+            cb.number_of_infeasibles = 0
+            SOLUTIONS[instanceName].bestValue = round(primal_objective,0) 
+            cb.bestSolution = primal_objective
+            
+            model = airplaneMIP.model
+            infoCB = model.register_callback(CountNodesCallback)
+            model.parameters.timelimit.set(timeLimit) # 10800 = 3h, 86400 = one day (24h)
+            model.parameters.mip.tolerances.mipgap.set(0.0)
+            #model.parameters.mip.strategy.file.set(2)
+            #model.parameters.emphasis.mip.set(2)
+            t0used = time.time()
+            model.solve()
+            time_used += -t0used+time.time()
+            if cb.bestSolution < primal_objective - 0.01:
+                DATA.TIMEFREEPLANESOLUTION = cb.best_plane_solution
+                DATA.TIMEFREEREQUESTSOLUTION = cb.best_request_solution
+                SOLUTIONS[instanceName].bestValue = round(cb.bestSolution,0) 
+            totallySolved = cb.totallySolved
+            #totallySolved = 1
+            timeLimit = 10800-(time.time()-t0)
+            
+            solution = model.solution
+            if model.solution.get_status() == 107:
+                print("Timed out stopping loop")
+                dualBound =round( max([dualBound,infoCB.best_obj_val]),0)
+                bestValue = round(cb.bestSolution,0)
+                #TODO: Properly update the dual gap
+                #if solution.MIP.get_best_objective() > bestDualBound[instanceName]:
+                #     bestDualBound[instanceName] = solution.MIP.get_best_objective()
+                break
+            else:
+                SOLUTIONS[instanceName].dualBound = round(solution.get_objective_value(),0)
+                bestValue = round(cb.bestSolution,0)
+                dualBound = round(solution.get_objective_value(),0)
+                loops = SOLUTIONS[instanceName].loop_iterations
+                gap = round(100 - 100*dualBound/bestValue,2)
+                SOLUTIONS[instanceName].history[loops] = __SOLUTION__(gap,dualBound,bestValue,loops,time.time()-t0,instanceName)
+                if loops > maxLoopIterations:
+                    maxLoopIterations = loops
+        
+        SOLUTIONS[instanceName].gap = round(100- 100*SOLUTIONS[instanceName].dualBound/SOLUTIONS[instanceName].bestValue,2)
+        SOLUTIONS[instanceName].time = int(min([10800,round(time.time()-t0,0)]))
+        SOLUTIONS[instanceName].printToScreen()
+        SOLUTIONS[instanceName].savePlaneVars(airplaneMIP.y,model.solution.get_values(),
+                 { n : j for j, n in enumerate(model.variables.get_names()) })
+    else:
         if pathBasedBoolean:
             airplaneMIP = __AIRLINEMIP__(DATA,cuttingPlanes,
                                          log_file_name = "logs/PB%d/" % int(sys.argv[2]) + instanceName + "%d" % SOLUTIONS[instanceName].loop_iterations)
@@ -577,62 +663,31 @@ for instanceName, directory in DIRECTORIES.iteritems():
             airplaneMIP = __AIRLINEMIP__(DATA,cuttingPlanes,pathBased=0,
                                          log_file_name = "logs/notPB%d/" % int(sys.argv[2]) + instanceName + "%d" % SOLUTIONS[instanceName].loop_iterations)
         primal_objective = setPrimal(airplaneMIP)
-        
-        if pathBasedBoolean:
-            if differentFull:
-                if lazyCb:
-                    cb = airplaneMIP.model.register_callback(RemoveIncumbentCallback)
-                else:
-                    cb = airplaneMIP.model.register_callback(breakIncumbentCallback3)
-            else:
-                cb = airplaneMIP.model.register_callback(breakIncumbentCallback)
-        else:
-            cb = airplaneMIP.model.register_callback(breakIncumbentCallback2)
-        cb.totallySolved = 0
-        cb.MIPMODEL = airplaneMIP
-        cb.fullModel = fullAirplaneMIP
-        cb.number_of_infeasibles = 0
         SOLUTIONS[instanceName].bestValue = round(primal_objective,0) 
-        cb.bestSolution = primal_objective
         
         model = airplaneMIP.model
+        infoCB = model.register_callback(CountNodesCallback)
         model.parameters.timelimit.set(timeLimit) # 10800 = 3h, 86400 = one day (24h)
         model.parameters.mip.tolerances.mipgap.set(0.0)
         #model.parameters.mip.strategy.file.set(2)
         #model.parameters.emphasis.mip.set(2)
-        t0used = time.time()
+        t0 = time.time()
         model.solve()
-        time_used += -t0used+time.time()
-        if cb.bestSolution < primal_objective - 0.01:
-            DATA.TIMEFREEPLANESOLUTION = cb.best_plane_solution
-            DATA.TIMEFREEREQUESTSOLUTION = cb.best_request_solution
-            SOLUTIONS[instanceName].bestValue = round(cb.bestSolution,0) 
-        totallySolved = cb.totallySolved
-        #totallySolved = 1
-        timeLimit = 10800-(time.time()-t0)
-        
         solution = model.solution
         if model.solution.get_status() == 107:
-            print("Timed out stopping loop")
-            #TODO: Properly update the dual gap
-            #if solution.MIP.get_best_objective() > bestDualBound[instanceName]:
-            #     bestDualBound[instanceName] = solution.MIP.get_best_objective()
-            break
+            bestValue = round(solution.get_objective_value(),0)
+            dualBound = infoCB.best_obj_val
+            gap = 100*infoCB.mip_gap
         else:
-            SOLUTIONS[instanceName].dualBound = round(solution.get_objective_value(),0)
-            bestValue = round(cb.bestSolution,0)
+            
+            bestValue = round(solution.get_objective_value(),0)
             dualBound = round(solution.get_objective_value(),0)
-            loops = SOLUTIONS[instanceName].loop_iterations
-            gap = round(100 - 100*dualBound/bestValue,2)
-            SOLUTIONS[instanceName].history[loops] = __SOLUTION__(gap,dualBound,bestValue,loops,time.time()-t0,instanceName)
-            if loops > maxLoopIterations:
-                maxLoopIterations = loops
-    
-    SOLUTIONS[instanceName].gap = round(100- 100*SOLUTIONS[instanceName].dualBound/SOLUTIONS[instanceName].bestValue,2)
-    SOLUTIONS[instanceName].time = int(min([10800,round(time.time()-t0,0)]))
-    SOLUTIONS[instanceName].printToScreen()
-    SOLUTIONS[instanceName].savePlaneVars(airplaneMIP.y,model.solution.get_values(),
-             { n : j for j, n in enumerate(model.variables.get_names()) })
+            gap = 0.00
+        
+        SOLUTIONS[instanceName] = __SOLUTION__(gap,dualBound,bestValue,1,time.time()-t0,instanceName)
+
+
+
 
 SOLUTIONS["Average"]=__SOLUTION__(sum([sol.gap for sol in SOLUTIONS.itervalues()])/float(len(SOLUTIONS)),
 
@@ -674,6 +729,8 @@ if pathBasedBoolean:
     fileName = "resultsPB.txt"
 else:
     fileName = "resultsOldModel.txt"
+if use_all:
+    fileName = "full_model_"+fileName
 
 file = open(fileName, "a")
 file.write(commentLine)

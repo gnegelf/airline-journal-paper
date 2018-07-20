@@ -10,7 +10,7 @@ Created on Mon Jul  2 17:23:06 2018
 @author: fabiangnegel
 """
 
-def readData(directory):
+def readData(directory,use_all):
     comment_line = re.compile('#')
     
     print "reading '"+directory+"/airplanes.dat'"
@@ -205,7 +205,7 @@ def readData(directory):
           plane, request, origin, destination, hour, minute = datas
           REQUEST_SOLUTION[plane, request, origin, destination, hour, minute] = 1
     
-    return __DATA__(AIRPORT,PLANE,REQUEST,TRIP,WEIGHTLIMIT,PLANE_SOLUTION,REQUEST_SOLUTION,timedelta)
+    return __DATA__(AIRPORT,PLANE,REQUEST,TRIP,WEIGHTLIMIT,PLANE_SOLUTION,REQUEST_SOLUTION,timedelta,use_all)
 
 def setPrimal(mipmodel):
     TIMEFREEPLANESOLUTION = mipmodel.DATA.TIMEFREEPLANESOLUTION
