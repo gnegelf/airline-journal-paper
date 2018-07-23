@@ -514,7 +514,7 @@ DIRECTORIES = {
     'LEO-OWL': 'Testinstances/A2-LEO_A2-OWL',
     }
 
-use_all = sys.argv[3]
+use_all = int(sys.argv[3])
 """
 if use_all:
     DIRECTORIES = {
