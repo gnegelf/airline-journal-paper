@@ -659,10 +659,10 @@ for instanceName, directory in DIRECTORIES.iteritems():
     else:
         if pathBasedBoolean:
             airplaneMIP = __AIRLINEMIP__(DATA,cuttingPlanes,
-                                         log_file_name = "logs/PB%d/" % int(sys.argv[2]) + instanceName + "%d" % SOLUTIONS[instanceName].loop_iterations)
+                                         log_file_name = "logs/PB%d/" % int(sys.argv[2]) + instanceName + "Full" )
         else:
             airplaneMIP = __AIRLINEMIP__(DATA,cuttingPlanes,pathBased=0,
-                                         log_file_name = "logs/notPB%d/" % int(sys.argv[2]) + instanceName + "%d" % SOLUTIONS[instanceName].loop_iterations)
+                                         log_file_name = "logs/notPB%d/" % int(sys.argv[2]) + instanceName + "Full")
         primal_objective = setPrimal(airplaneMIP)
         SOLUTIONS[instanceName].bestValue = round(primal_objective,0) 
         
