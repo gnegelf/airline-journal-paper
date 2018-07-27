@@ -214,8 +214,10 @@ def setPrimal(mipmodel):
     AirportNum = mipmodel.DATA.current_airport_num
     y = mipmodel.y
     #x = mipmodel.x
-    
+    model.parameters.timelimit.set(30)
+    primalVal=0.0
     for p,i,j in TIMEFREEPLANESOLUTION:
+        primalVal += TIMEFREEPLANESOLUTION[p,i,j]*mipmodel.DATA.travelcost[i,j,p]
         thevars = []
         thecoefs = []
         for n1 in AirportNum[p,i]:
@@ -244,7 +246,7 @@ def setPrimal(mipmodel):
         print "Primal solution could not be recovered"
         for p,i,j in TIMEFREEPLANESOLUTION:
             model.linear_constraints.delete("fix_airplane_schedule_" + i + "_" + j + "_" + p)
-        return 100000
+        return primalVal
         
 
 # -------

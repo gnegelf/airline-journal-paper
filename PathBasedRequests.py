@@ -686,7 +686,7 @@ for instanceName, directory in DIRECTORIES.iteritems():
                 dualBound = round(solution.get_objective_value(),0)
                 gap = 0.00
             else:
-                bestValue = round(100000.0,0)
+                bestValue = primal_objective
                 dualBound = round(infoCB.best_obj_val,0)
                 gap = 100.00
         SOLUTIONS[instanceName] = __SOLUTION__(gap,dualBound,bestValue,1,time.time()-t0,instanceName)
