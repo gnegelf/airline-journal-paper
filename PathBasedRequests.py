@@ -553,7 +553,9 @@ if int(sys.argv[2])==5:
     cuttingPlanes['useless_detour_cut']=1
     cuttingPlanes['time_order_cut']=1
     cuttingPlanes['request_conflict_cut']=1
-
+if int(sys.argv[2])==6:
+    cuttingPlanes['useless_detour_cut']=1
+    cuttingPlanes['time_order_cut']=1
 
 differentFull = 1
 lazyCb = 0
