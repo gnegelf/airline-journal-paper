@@ -574,9 +574,9 @@ for instanceName, directory in DIRECTORIES.iteritems():
         for p in DATA.PLANE:
             if pathBasedBoolean:
                 if differentFull:
-                    fullAirplaneMIP[p] = __AIRLINEMIP__(DATA,fullModelCuts,1,{p:DATA.PLANE[p]},0,log_file_name ="")
+                    fullAirplaneMIP[p] = __AIRLINEMIP__(DATA,fullModelCuts,1,{p:DATA.PLANE[p]},0,log_file_name ="",use_all=0)
                 else:
-                    fullAirplaneMIP[p] = __AIRLINEMIP__(DATA,fullModelCuts,1,{p:DATA.PLANE[p]},1,log_file_name ="")
+                    fullAirplaneMIP[p] = __AIRLINEMIP__(DATA,fullModelCuts,1,{p:DATA.PLANE[p]},1,log_file_name ="",use_all=0)
             else:
                 fullAirplaneMIP[p] = __AIRLINEMIP__(DATA,fullModelCuts,1,{p:DATA.PLANE[p]},0,log_file_name = "")
     primal_objective=100000
@@ -593,10 +593,10 @@ for instanceName, directory in DIRECTORIES.iteritems():
             SOLUTIONS[instanceName].loop_iterations += 1
             if pathBasedBoolean:
                 airplaneMIP = __AIRLINEMIP__(DATA,cuttingPlanes,
-                                             log_file_name = "logs/PB%d/" % int(sys.argv[2]) + instanceName + "%d" % SOLUTIONS[instanceName].loop_iterations)
+                                             log_file_name = "logs/PB%d/" % int(sys.argv[2]) + instanceName + "%d" % SOLUTIONS[instanceName].loop_iterations,use_all=0)
             else:
                 airplaneMIP = __AIRLINEMIP__(DATA,cuttingPlanes,pathBased=0,
-                                             log_file_name = "logs/notPB%d/" % int(sys.argv[2]) + instanceName + "%d" % SOLUTIONS[instanceName].loop_iterations)
+                                             log_file_name = "logs/notPB%d/" % int(sys.argv[2]) + instanceName + "%d" % SOLUTIONS[instanceName].loop_iterations,use_all=0)
             primal_objective = setPrimal(airplaneMIP)
             
             if pathBasedBoolean:
@@ -660,11 +660,11 @@ for instanceName, directory in DIRECTORIES.iteritems():
                  { n : j for j, n in enumerate(model.variables.get_names()) })
     else:
         if pathBasedBoolean:
-            airplaneMIP = __AIRLINEMIP__(DATA,cuttingPlanes,
-                                         log_file_name = "logs/PB%d/" % int(sys.argv[2]) + instanceName + "Full" )
+            airplaneMIP = __AIRLINEMIP__(DATA,cuttingPlanes,pathBased=1,
+                                         log_file_name = "logs/PB%d/" % int(sys.argv[2]) + instanceName + "Full",use_all=1 )
         else:
             airplaneMIP = __AIRLINEMIP__(DATA,cuttingPlanes,pathBased=0,
-                                         log_file_name = "logs/notPB%d/" % int(sys.argv[2]) + instanceName + "Full")
+                                         log_file_name = "logs/notPB%d/" % int(sys.argv[2]) + instanceName + "Full",use_all=1)
         primal_objective = setPrimal(airplaneMIP)
         SOLUTIONS[instanceName].bestValue = round(primal_objective,0) 
         

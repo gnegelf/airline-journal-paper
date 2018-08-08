@@ -474,14 +474,16 @@ class __DATA__(object):
 
 class __AIRLINEMIP__(object):
     
-    def __init__(self,DATA,cuttingPlanes={},full=0,p={},pathBased=1,log_file_name=""):
+    def __init__(self,DATA,cuttingPlanes={},full=0,p={},pathBased=1,log_file_name="",use_all=0):
         self.DATA = DATA
         self.log_file_name = log_file_name
+        self.use_all = use_all
         if pathBased:
             self.generateMIP(cuttingPlanes,full,p)
         else:
             self.generateMIP2(cuttingPlanes,full,p)
     def generateMIP(self,cuttingPlanes,full,p):
+        use_all=self.use_all
         DATA=self.DATA
         if full:
             PLANE = p
@@ -590,7 +592,7 @@ class __AIRLINEMIP__(object):
             for p in PLANE:
                 for n1 in AirportNum[p,i]:
                   for n2 in AirportNum[p,j]:
-                      if n1 == AirportNum[p,i][-1] and n2 == AirportNum[p,j][-1]:
+                      if n1 == AirportNum[p,i][-1] and n2 == AirportNum[p,j][-1] and not use_all:
                           y[i,j,p,n1,n2] = "y#" + i  + "_" + j  + "_" + p + "_" + str(n1) + "_" + str(n2)
                           model.variables.add(obj = [travelcost[i,j,p]], names = [y[i,j,p,n1,n2]], lb = [0], types = ["I"])
                           number_of_variables += 1
@@ -1512,6 +1514,7 @@ class __AIRLINEMIP__(object):
 
     def generateMIP2(self,cuttingPlanes,full,p):
         DATA=self.DATA
+        use_all=self.use_all
         if full:
             PLANE = p
         else:
@@ -1604,7 +1607,7 @@ class __AIRLINEMIP__(object):
             for p in PLANE:
                 for n1 in AirportNum[p,i]:
                   for n2 in AirportNum[p,j]:
-                      if n1 == AirportNum[p,i][-1] and n2 == AirportNum[p,j][-1]:
+                      if n1 == AirportNum[p,i][-1] and n2 == AirportNum[p,j][-1] and not use_all:
                           y[i,j,p,n1,n2] = "y#" + i  + "_" + j  + "_" + p + "_" + str(n1) + "_" + str(n2)
                           model.variables.add(obj = [travelcost[i,j,p]], names = [y[i,j,p,n1,n2]], lb = [0], types = ["I"])
                           number_of_variables += 1
