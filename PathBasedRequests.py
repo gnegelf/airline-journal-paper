@@ -28,6 +28,7 @@ EPSILON = 1e-6
 
 class RemoveIncumbentCallback(LazyConstraintCallback):
   def __call__(self):
+    
     all_values = self.get_values()
     self.totallySolved = 1
 
@@ -207,7 +208,7 @@ class breakIncumbentCallback3(IncumbentCallback):
         
         
 
-            
+          
         for r in REQUEST:
             assignedRequests[p][r] = 0
         
@@ -253,6 +254,13 @@ class breakIncumbentCallback3(IncumbentCallback):
                         self.best_plane_solution[key[2],key[0],key[1]] += valStore
                     else:
                         self.best_plane_solution[key[2],key[0],key[1]] = 1
+            """
+            self.best_request_solution = {}
+            for key,val in x.iteritems():
+                valStore=all_values[name2idx[val]]
+                if valStore > 0.1: 
+                    self.best_request_solution[key[3],key[2],key[0],key[1]] = 1
+            """
     
     return
 
@@ -518,15 +526,7 @@ use_all = int(sys.argv[3])
 """
 if use_all:
     DIRECTORIES = {
-        'BUF-AIV': 'Testinstances/A2-BUF_A2-AIV',
-        'LEO-AIV': 'Testinstances/A2-LEO_A2-AIV',
-        'LEO-ANT': 'Testinstances/A2-LEO_A2-ANT',
-        'LEO-JKL': 'Testinstances/A2-LEO_A2-JKL',
-        'LEO-NAS': 'Testinstances/A2-LEO_A2-NAS',
-        'LEO-OWL': 'Testinstances/A2-LEO_A2-OWL',
-        #'BUF-ZEB': 'Testinstances/A2-BUF_A2-ZEB',
-        'EGL-BEE': 'Testinstances/A2-EGL_A2-BEE',
-        #'EGL-GNU': 'Testinstances/A2-EGL_A2-GNU',
+        'BUF-JKL': 'Testinstances/A2-BUF_A2-JKL',
         }
 
 """
@@ -620,6 +620,10 @@ for instanceName, directory in DIRECTORIES.iteritems():
             infoCB = model.register_callback(CountNodesCallback)
             model.parameters.timelimit.set(timeLimit) # 10800 = 3h, 86400 = one day (24h)
             model.parameters.mip.tolerances.mipgap.set(0.0)
+            model.parameters.workmem.set(8192)                      
+            # set workmem to 8 GByte
+            model.parameters.mip.strategy.file.set(2)               
+            # store node file on disk (uncompressed) when workmem is exceeded
             #model.parameters.mip.strategy.file.set(2)
             #model.parameters.emphasis.mip.set(2)
             t0used = time.time()
@@ -672,6 +676,10 @@ for instanceName, directory in DIRECTORIES.iteritems():
         infoCB = model.register_callback(CountNodesCallback)
         model.parameters.timelimit.set(timeLimit) # 10800 = 3h, 86400 = one day (24h)
         model.parameters.mip.tolerances.mipgap.set(0.0)
+        model.parameters.workmem.set(8192)                      
+        # set workmem to 8 GByte
+        model.parameters.mip.strategy.file.set(2)               
+        # store node file on disk (uncompressed) when workmem is exceeded
         #model.parameters.mip.strategy.file.set(2)
         #model.parameters.emphasis.mip.set(2)
         t0 = time.time()

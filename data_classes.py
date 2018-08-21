@@ -1598,6 +1598,13 @@ class __AIRLINEMIP__(object):
             for r in REQUEST:
                 r2[r] = "r_ass" + r + "_"
                 model.variables.add(names = [r2[r]], types = ["B"])
+        else:
+            r2 = {}
+            self.r2 = r2
+            for p in PLANE:
+                for r in REQUEST:
+                    r2[r,p] = "r_ass" + r + "_" + p
+                    model.variables.add(names = [r2[r,p]], types = ["B"])
         
         y = {}
         self.y = y
@@ -1930,31 +1937,42 @@ class __AIRLINEMIP__(object):
             # each request must depart
         
             for r in REQUEST:
-                  thevars = []
-                  thecoefs = []
-                  for p in PLANE:
-                      for n1 in AirportNum[p,REQUEST[r].origin]:
-                        thevars.append(x_dep[r,p,n1])
-                        thecoefs.append(1.0)
-                        number_of_nonzeros += 1
-                        
-                  model.linear_constraints.add(names = ["request_one_dep_" + r], lin_expr = [cplex.SparsePair(thevars,thecoefs)], senses = ["E"], rhs = [1.0])
-                  number_of_constraints += 1
-            
-            
-            # each request must arrive
-            
-            for r in REQUEST:
-              thevars = []
-              thecoefs = []
-              for p in PLANE:
-                  for n1 in AirportNum[p,REQUEST[r].destination]:
-                    thevars.append(x_arr[r,p,n1])
-                    thecoefs.append(1.0)
-                    number_of_nonzeros += 1
+                thevars = []
+                thecoefs = []
+                for p in PLANE:
+                    for n1 in AirportNum[p,REQUEST[r].origin]:
+                      thevars.append(x_dep[r,p,n1])
+                      thecoefs.append(1.0)
+                      number_of_nonzeros += 1
+                    thevars += [r2[r,p]]
+                    thecoefs += [-1.0]
+                    model.linear_constraints.add(names = ["request_one_dep_" + r], lin_expr = [cplex.SparsePair(thevars,thecoefs)], senses = ["E"], rhs = [0.0])
+                    number_of_constraints += 1
                 
-              model.linear_constraints.add(names = ["request_one_arr_" + r], lin_expr = [cplex.SparsePair(thevars,thecoefs)], senses = ["E"], rhs = [1.0])
-              number_of_constraints += 1
+                #each request must be assigned
+                thevars = []
+                thecoefs = []
+                for p in PLANE:
+                    thevars += [r2[r,p]]
+                    thecoefs += [1.0]
+                    
+                model.linear_constraints.add(names = ["request_assignment_" + r + '_' + p], lin_expr = [cplex.SparsePair(thevars,thecoefs)], senses = ["E"], rhs = [1.0])
+                number_of_constraints += 1
+                number_of_nonzeros += len(thevars)
+                
+                # each request must arrive
+                thevars = []
+                thecoefs = []
+                for p in PLANE:
+                    for n1 in AirportNum[p,REQUEST[r].destination]:
+                      thevars.append(x_arr[r,p,n1])
+                      thecoefs.append(1.0)
+                      number_of_nonzeros += 1
+                    thevars += [r2[r,p]]
+                    number_of_nonzeros += 1
+                    thecoefs += [-1.0]  
+                    model.linear_constraints.add(names = ["request_one_arr_" + r], lin_expr = [cplex.SparsePair(thevars,thecoefs)], senses = ["E"], rhs = [0.0])
+                    number_of_constraints += 1
               
             
             # request flow

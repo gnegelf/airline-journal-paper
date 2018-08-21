@@ -209,12 +209,13 @@ def readData(directory,use_all):
 
 def setPrimal(mipmodel):
     TIMEFREEPLANESOLUTION = mipmodel.DATA.TIMEFREEPLANESOLUTION
-    #TIMEFREEREQUESTSOLUTION = mipmodel.DATA.TIMEFREEREQUESTSOLUTION
+    TIMEFREEREQUESTSOLUTION = mipmodel.DATA.TIMEFREEREQUESTSOLUTION
     model = mipmodel.model
     AirportNum = mipmodel.DATA.current_airport_num
     y = mipmodel.y
+    r2 = mipmodel.r2
     #x = mipmodel.x
-    model.parameters.timelimit.set(30)
+    model.parameters.timelimit.set(300)
     primalVal=0.0
     for p,i,j in TIMEFREEPLANESOLUTION:
         primalVal += TIMEFREEPLANESOLUTION[p,i,j]*mipmodel.DATA.travelcost[i,j,p]
@@ -229,6 +230,19 @@ def setPrimal(mipmodel):
                                    lin_expr = [cplex.SparsePair(thevars,thecoefs)], 
                                    senses = ["E"], rhs = [TIMEFREEPLANESOLUTION[p,i,j]])
     
+    assList = {}
+    for p,r,i,j in TIMEFREEREQUESTSOLUTION:
+        if not assList.has_key(r):
+            thevars = [r2[r,p]]
+            thecoefs = [1.0]
+            assList[r] = p
+            
+            #model.linear_constraints.add(names = ["fix_request_assignment" + r + "_"  + p], 
+            #                           lin_expr = [cplex.SparsePair(thevars,thecoefs)], 
+            #                           senses = ["E"], rhs = [1.0])
+        else:
+            if assList[r] != p:
+                print ("Error: Request assigned to two planes")
     model.solve()
     solution = model.solution
     
@@ -241,11 +255,15 @@ def setPrimal(mipmodel):
         obj = solution.get_objective_value()
         for p,i,j in TIMEFREEPLANESOLUTION:
             model.linear_constraints.delete("fix_airplane_schedule_" + i + "_" + j + "_" + p)
+        #for r in assList:
+        #    model.linear_constraints.delete("fix_request_assignment" + r + "_"  + assList[r])
         return obj
     else:
         print "Primal solution could not be recovered"
         for p,i,j in TIMEFREEPLANESOLUTION:
             model.linear_constraints.delete("fix_airplane_schedule_" + i + "_" + j + "_" + p)
+        #for r in assList:
+        #    model.linear_constraints.delete("fix_request_assignment" + r + "_"  + assList[r])
         return primalVal
         
 
