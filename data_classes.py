@@ -552,6 +552,7 @@ class __AIRLINEMIP__(object):
         else:
             if self.log_file_name != "":
                 model.set_results_stream(self.log_file_name)
+                model.set_log_stream(self.log_file_name+"vars")
             
         self.model = model
         
@@ -1553,6 +1554,7 @@ class __AIRLINEMIP__(object):
         else:
             if self.log_file_name != "":
                 model.set_results_stream(self.log_file_name)
+                model.set_log_stream(self.log_file_name+"vars")
         
         number_of_variables = 0
         number_of_constraints = 0

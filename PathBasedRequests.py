@@ -233,7 +233,7 @@ class breakIncumbentCallback3(IncumbentCallback):
         fullModel.solve()
         if not fullModel.solution.is_primal_feasible():
             self.number_of_infeasibles += 1
-            print "\n number of infeasibles: " +str(self.number_of_infeasibles) +"\n"
+            #print "\n number of infeasibles: " +str(self.number_of_infeasibles) +"\n"
             self.totallySolved = 0
             for s in airports:
                 if AirportNum[p,s][-1] < airports[s]:
@@ -254,13 +254,13 @@ class breakIncumbentCallback3(IncumbentCallback):
                         self.best_plane_solution[key[2],key[0],key[1]] += valStore
                     else:
                         self.best_plane_solution[key[2],key[0],key[1]] = 1
-            """
+            
             self.best_request_solution = {}
             for key,val in x.iteritems():
                 valStore=all_values[name2idx[val]]
                 if valStore > 0.1: 
-                    self.best_request_solution[key[3],key[2],key[0],key[1]] = 1
-            """
+                    self.best_request_solution[key[1],key[0],'DEF','DEF'] = 1
+            
     
     return
 
@@ -384,12 +384,12 @@ class breakIncumbentCallback2(IncumbentCallback):
                         self.best_plane_solution[key[2],key[0],key[1]] += 1
                     else:
                         self.best_plane_solution[key[2],key[0],key[1]] = 1
-            
+            #r2 = self.MIPMODEL.r2
             self.best_request_solution = {}
             for key,val in x.iteritems():
                 valStore=all_values[name2idx[val]]
                 if valStore > 0.1: 
-                    self.best_request_solution[key[3],key[2],key[0],key[1]] = 1
+                    self.best_request_solution[key[1],key[0],'DEF','DEF'] = 1
                         
     return
 
@@ -523,13 +523,9 @@ DIRECTORIES = {
     }
 
 use_all = int(sys.argv[3])
-"""
-if use_all:
-    DIRECTORIES = {
-        'BUF-JKL': 'Testinstances/A2-BUF_A2-JKL',
-        }
 
-"""
+
+
 
 cuttingPlanes = {
         'min_fuel_cut':1,

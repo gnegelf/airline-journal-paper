@@ -237,9 +237,9 @@ def setPrimal(mipmodel):
             thecoefs = [1.0]
             assList[r] = p
             
-            #model.linear_constraints.add(names = ["fix_request_assignment" + r + "_"  + p], 
-            #                           lin_expr = [cplex.SparsePair(thevars,thecoefs)], 
-            #                           senses = ["E"], rhs = [1.0])
+            model.linear_constraints.add(names = ["fix_request_assignment" + r + "_"  + p], 
+                                       lin_expr = [cplex.SparsePair(thevars,thecoefs)], 
+                                       senses = ["E"], rhs = [1.0])
         else:
             if assList[r] != p:
                 print ("Error: Request assigned to two planes")
@@ -255,15 +255,15 @@ def setPrimal(mipmodel):
         obj = solution.get_objective_value()
         for p,i,j in TIMEFREEPLANESOLUTION:
             model.linear_constraints.delete("fix_airplane_schedule_" + i + "_" + j + "_" + p)
-        #for r in assList:
-        #    model.linear_constraints.delete("fix_request_assignment" + r + "_"  + assList[r])
+        for r in assList:
+            model.linear_constraints.delete("fix_request_assignment" + r + "_"  + assList[r])
         return obj
     else:
         print "Primal solution could not be recovered"
         for p,i,j in TIMEFREEPLANESOLUTION:
             model.linear_constraints.delete("fix_airplane_schedule_" + i + "_" + j + "_" + p)
-        #for r in assList:
-        #    model.linear_constraints.delete("fix_request_assignment" + r + "_"  + assList[r])
+        for r in assList:
+            model.linear_constraints.delete("fix_request_assignment" + r + "_"  + assList[r])
         return primalVal
         
 
