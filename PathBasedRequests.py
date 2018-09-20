@@ -389,7 +389,7 @@ class breakIncumbentCallback2(IncumbentCallback):
             for key,val in x.iteritems():
                 valStore=all_values[name2idx[val]]
                 if valStore > 0.1: 
-                    self.best_request_solution[key[1],key[0],'DEF','DEF'] = 1
+                    self.best_request_solution[key[3],key[2],'DEF','DEF'] = 1
                         
     return
 
@@ -523,7 +523,6 @@ DIRECTORIES = {
     }
 
 use_all = int(sys.argv[3])
-
 
 
 

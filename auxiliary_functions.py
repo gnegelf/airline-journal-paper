@@ -215,7 +215,7 @@ def setPrimal(mipmodel):
     y = mipmodel.y
     r2 = mipmodel.r2
     #x = mipmodel.x
-    model.parameters.timelimit.set(300)
+    model.parameters.timelimit.set(600)
     primalVal=0.0
     for p,i,j in TIMEFREEPLANESOLUTION:
         primalVal += TIMEFREEPLANESOLUTION[p,i,j]*mipmodel.DATA.travelcost[i,j,p]
