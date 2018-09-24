@@ -2790,8 +2790,10 @@ for direcStr,directory in sorted(DIRECTORIES.iteritems()):
     
     # solve again
     
-    model.write("model.lp")
-    
+    #model.write("model.lp")
+    log_file_name = "logs/TF/"+direcStr
+    model.set_results_stream(log_file_name)
+    model.set_log_stream(log_file_name+"vars")
     t0 = time.clock()
     model.solve()
     
