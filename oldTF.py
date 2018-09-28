@@ -2742,6 +2742,7 @@ for direcStr,directory in sorted(DIRECTORIES.iteritems()):
     print "Solution status:", solution.get_status()
     
     if solution.is_primal_feasible():
+        primal_val=solution.get_objective_value()
         print "Primal solution value:", solution.get_objective_value()
         solution.write("model_fixed.sol")
     else:
@@ -2780,6 +2781,8 @@ for direcStr,directory in sorted(DIRECTORIES.iteritems()):
     
     mipinfo_cb = model.register_callback(CountNodesCallback)
     mipinfo_cb.number_of_nodes = 0
+    mipinfo_cb.mip_gap=100
+    mipinfo_cb.best_obj_val = primal_val
     
     # set time limit
     
@@ -2809,10 +2812,10 @@ for direcStr,directory in sorted(DIRECTORIES.iteritems()):
       print "calls of incumbent callback with new solutions:",incumbent_cb.number_of_calls_with_new_solution
       print "callback time:",incumbent_cb.callback_time
     
-    print "MIP gap:",mipinfo_cb.mip_gap
-    print "Dual bound value:",mipinfo_cb.best_obj_val
+    #print "MIP gap:",mipinfo_cb.mip_gap
+    #print "Dual bound value:",mipinfo_cb.best_obj_val
     
-    print "number of nodes:",mipinfo_cb.number_of_nodes
+    #print "number of nodes:",mipinfo_cb.number_of_nodes
     
     solution = model.solution
     
@@ -2821,8 +2824,9 @@ for direcStr,directory in sorted(DIRECTORIES.iteritems()):
     
     if solution.is_primal_feasible():
         print "Final solution value:", solution.get_objective_value()
-        lineToAdd = direcStr + " & %d & %d & %.2f \\%% & %d \\\\\n" % (mipinfo_cb.best_obj_val,
-                                                                          solution.get_objective_value(),                                                                                 mipinfo_cb.mip_gap,time.clock() - t0)
+        lineToAdd = direcStr + " & %d & %d & %.2f \\%% & %d \\\\\n" % (mipinfo_cb.best_obj_val,  
+                                                                       solution.get_objective_value(),
+                                                                       mipinfo_cb.mip_gap*100,time.clock() - t0)
     else:
         print "No solution available."
     file = open(fileName, "a")
