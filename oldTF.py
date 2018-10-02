@@ -2798,6 +2798,7 @@ for direcStr,directory in sorted(DIRECTORIES.iteritems()):
     model.set_results_stream(log_file_name)
     model.set_log_stream(log_file_name+"vars")
     t0 = time.clock()
+    model.parameters.workmem.set(8192)
     model.solve()
     
     # report solution
