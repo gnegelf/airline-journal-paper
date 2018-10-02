@@ -2788,7 +2788,7 @@ for direcStr,directory in sorted(DIRECTORIES.iteritems()):
     
     model.parameters.timelimit.set(10800) # 10800 = 3h, 86400 = one day (24h)
     model.parameters.mip.tolerances.mipgap.set(0.0)
-    model.parameters.mip.strategy.file.set(2) # node file on disk
+    #model.parameters.mip.strategy.file.set(2) # node file on disk
     #model.parameters.workmem.set(4096.0) # working memory
     
     # solve again
